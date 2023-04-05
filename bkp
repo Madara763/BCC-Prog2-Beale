@@ -1,0 +1,88 @@
+
+void rotacao_dir_rb(rbno_t *p){
+    rbno_t *aux = p->p;
+    p->p = aux->p;
+    if(p->p->p!=NULL)
+        p->p->p->dir = p;
+
+    aux->esq = p->dir;
+    if (aux->esq!= NULL)
+        aux->esq->p = aux;
+
+    p->dir = aux;
+    aux->p = p;
+}
+
+void rotacao_esq_rb(rbno_t *p){
+    rbno_t *aux = p->p;
+    p->p = aux->p;
+    if(p->p->p)
+        p->p->p->esq = p;
+
+    aux->dir = p->esq;
+    if (aux->dir!= NULL)
+        aux->dir->p = aux;
+        
+    p->esq = aux;
+    aux->p = p;
+}
+void arruma_rb(rbno_t *raiz, rbno_t *no){
+    rbno_t *tio = NULL;
+    rbno_t *aux = NULL;
+
+    while (no->p != NULL && no->p->cor == VERMELHO) {
+        if (no->p == no->p->p->esq) {
+            tio = no->p->p->dir;
+            if (tio != NULL && tio->cor == VERMELHO){
+                no->p->cor = PRETO;
+                tio->cor = PRETO;
+                no->p->p->cor = VERMELHO;
+                no = no->p->p;
+            } else {
+                if (no == no->p->dir) {
+                    rotacao_esq_rb(no);
+                    no = no->esq;
+                }
+                no->p->cor = PRETO;
+                no->p->p->cor = VERMELHO;
+                rotacao_dir_rb(no->p->p);
+                arruma_rb(raiz, no->p);
+                if (no->p->p == NULL)
+                    raiz = no->p;
+            }
+        } else {
+            tio = no->p->p->esq;
+            if (tio != NULL && tio->cor == VERMELHO){
+                no->p->cor = PRETO;
+                tio->cor = PRETO;
+                no->p->p->cor = VERMELHO;
+                no = no->p->p;
+            } else {
+                if (no == no->p->esq) {
+                    rotacao_dir_rb(no);
+                    no = no->dir;
+                }
+                no->p->cor = PRETO;
+                no->p->p->cor = VERMELHO;
+                rotacao_esq_rb(no->p->p);
+                arruma_rb(raiz, no->p);
+                if (no->p->p == NULL)
+                    raiz = no->p;
+            }
+        }
+    }
+
+    raiz->cor = PRETO;
+}
+printf("*********\n");
+                    printf("Chave:%d\n",no->chave);
+                    printf("Letra:%c\n",no->letra);
+                    printf("Pai:%d\n",no->p->chave);
+                    printf("irmao:%d\n",no->p->esq->chave);
+                    printf("avo:%d\n",no->p->p->chave);
+                    printf("FILHO DO AVO:%d\n",no->p->p->dir->chave);
+                    if(no->cor==VERMELHO)
+                        printf("Cor: Vermelho\n");
+                    else
+                        printf("Cor: Preto\n");
+                    printf("*********\n");

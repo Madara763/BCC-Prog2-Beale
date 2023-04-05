@@ -1,6 +1,6 @@
-CFLAGS = -Wall -g  # gerar "warnings" detalhados e infos de depuração
+CFLAGS = -Wall -g -std=c99 # gerar "warnings" detalhados e infos de depuração
  
-objs = beale.o libargmain.o
+objs = beale.o libargmain.o librb.o
 
 # regra default (primeira regra)
 all: beale
@@ -11,6 +11,7 @@ beale:	$(objs)
 # regras de compilação
 beale.o:	beale.c
 libargmain.o:	libargmain.c 
+librb.o:	librb.c
  
 # remove arquivos temporários
 clean:
