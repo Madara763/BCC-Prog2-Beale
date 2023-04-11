@@ -15,8 +15,12 @@ Data: 27/03/2023
 2 para decode com arquivo de chaves
 3 para decode com livro cifra
 */
-int checaarg(int argc, char **argv);
+int checaarg(int argc, char **argv, char** cifra, char** chaves, char** original, char** codificado, char** decodificado);
 
 //Printa na tela como devem ser as opções na entrada do programa
 void argerror();
+
+//Printa na tela como devem ser os argumentos e suas funções
+void arghelp();
+
 #endif

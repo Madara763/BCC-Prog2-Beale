@@ -7,49 +7,156 @@ Data: 27/03/2023
 */
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include"libargmain.h"
 
+#define ENCODE 1
+#define CHAVES 2
+#define CIFRAS 3
 
 /*Chaga todos os argumentos e retorna:
-0 em caso de err0
+0 em caso de erro
 1 em caso de encode
 2 para decode com arquivo de chaves
 3 para decode com livro cifra
+
+OPT:
+    -e encode
+        -o mensagem codificada
+        -b nome do livro cifra
+        -m mensagem original
+        -c arquivo de chaves
+
+    -d decode
+        -b livro cifra
+        -c arquivo de chaves
+        -i mensagem codificada
+        -o mensagem decodificada
+    
 */
-int checaarg(int argc, char **argv){
-    if(argc!=8 && argc!=10){
+int checaarg(int argc, char **argv, char** cifra, char** chaves, char** original, char** codificado, char** decodificado){
+    
+    //testa quantidade de argumentos
+    if(argc!=8 && argc!=10 && argc!=2){
         argerror();
         return 0;
     }
-    if(argv[1][1]=='d'){//Argumento para decodificar
 
-        if(argv[6][1]=='o'){
-           
-            if(argv[4][1]=='c')//decoder usando arquivo de chaves
-                return 2;
+    //testa o --help
+    if(argc==2){    
+        if(strcmp(argv[1],"--help") == 0){
+            arghelp();
+            return 0;
+        }
+    }
+         
+    //armazena os nomes dos aquivos
+    //livro cifra
+    //arquivo de chaves
+    //mesnsagem original
+    //mensagem codificada
+    //mensagem decodificada
 
-            else if(argv[4][1]=='b')//decoder usando livro de cifras
-                return 3;
-            
-        }else{
+    int i=0;
+    *cifra=NULL;
+    *chaves=NULL;
+    *original=NULL;
+    *codificado=NULL;
+    *decodificado=NULL;
+
+    //verifica se existem as flags -e ou -d
+    while(strcmp(argv[i], "-e") != 0 && strcmp(argv[i], "-d") != 0 && i < argc ){
+        i++;
+    }
+
+    //encode
+    if(strcmp(argv[i], "-e") == 0){
+        if (argc != 10){
             argerror();
             return 0;
-        } 
-
-    }else if(argv[1][1]=='e'){//Argumento para codificar
-        if(argv[2][1]=='b' && argv[4][1]=='m' && argv[6][1]=='o' && argv[8][1]=='c')
-            return 1;
+        }
         
-    }else{
-        argerror();
-        return 0;
+        for(i=1; i<argc-1; i++){
+            if(strcmp(argv[i], "-b") == 0 && argv[i+1][0] != '-') {     //livro cifras
+                printf("Primero if: %s e %s\n", argv[i], argv[i+1]);
+                *cifra=argv[i+1];            
+            }
+            if(strcmp(argv[i], "-c") == 0 && argv[i+1][0] != '-') {     //arquivos de chaves
+                printf("segundo if: %s e %s\n", argv[i], argv[i+1]);
+                *chaves=argv[i+1];
+            }
+            if(strcmp(argv[i], "-m") == 0 && argv[i+1][0] != '-') {     //mensagem original
+                printf("Terceiro if: %s e %s\n", argv[i], argv[i+1]);
+                *original=argv[i+1];
+            }
+            if(strcmp(argv[i], "-o") == 0 && argv[i+1][0] != '-') {     //mensagem codificada
+                printf("Quarto if: %s e %s\n", argv[i], argv[i+1]);
+                *codificado=argv[i+1];
+            }
+        }
+        if((*cifra!=NULL) && (*chaves!=NULL) && (*original!=NULL) && (*codificado!=NULL) )
+            return ENCODE;          
+
     }
+    //decode
+    else if(strcmp(argv[i], "-d") == 0){    
+         if (argc != 8){
+            argerror();
+            return 0;
+        }
+        //armazena se o decode será com livro cifra ou arq chaves
+
+        for(i=1; i<argc-1; i++){
+            if(strcmp(argv[i], "-b") == 0 && argv[i+1][0] != '-')     //livro cifras
+                *cifra=argv[i+1];
+            
+            if(strcmp(argv[i], "-c") == 0 && argv[i+1][0] != '-')     //arquivos de chaves
+                *chaves=argv[i+1];
+            
+            if(strcmp(argv[i], "-o") == 0 && argv[i+1][0] != '-')     //mensagem decodificada
+                *decodificado=argv[i+1];
+            
+            if(strcmp(argv[i], "-i") == 0 && argv[i+1][0] != '-')     //mensagem codificada
+                *codificado=argv[i+1];
+            
+        }
+
+        if((*codificado!=NULL) && (*decodificado!=NULL) ){
+            if(*cifra!=NULL && *chaves == NULL)
+                return CIFRAS;
+            else if(*cifra==NULL && *chaves != NULL)
+                return CHAVES;
+        }
+    }//while
+
+    argerror();
     return 0;
 }
 
 //Printa na tela como devem ser as opções na entrada do programa
 void argerror(){//Imprime como devem ser os argumentos 
-    printf("Argumentos excessivos ou insuficientes.\n");
-    printf("Tente\n\t -d = Decodificar\n\t -e = Codificar\n\t -i = Nome Mesagem Codificada\n");
-    printf("\t -b = Livro Cifra\n\t -c = Aruivo de Chaves\n\t -o = Nome Mesagem Decodificada\n\t -m = Mensagem Original\n");     
+    printf("Argumentos errados, excessivos ou insuficientes.\n");
+    printf("\n./beale --help para informações.\n");
+}
+
+//imprime como devem ser os argumentos
+void arghelp(){
+    printf("\nBeale V1.0");
+    printf("\nPor Davi Lazzarin");
+    printf("\nArgumentos:");
+    printf("\nCodificação:");
+    printf("\n\t -e encode");
+    printf("\n\t -b livro cifra, obrigatório");
+    printf("\n\t -m mensagem original, obrigatório");
+    printf("\n\t -o mensagem codificada, obrigatório");
+    printf("\n\t -c arquivo de chaves, obrigatório");
+    printf("\n");
+    printf("\nDecodificação");
+    printf("\n\t -d decode");
+    printf("\n\t -i mensagem codificada, obrigatório");
+    printf("\n\t -o mensagem decodificada, obrigatório");
+    printf("\n\t -b livro cifra, opcional ao -c");
+    printf("\n\t -c arquivo de chave, opcional ao -b");
+    printf("\nAjuda");
+    printf("\n\t --help\n");
 }
