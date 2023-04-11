@@ -3,4 +3,4 @@ Esse repositório foi criado durante a elaboração de um trabalho academico de 
 
 O enunciado pode ser encontrado em https://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:cifras_de_baele e nele se encontram alguns requisitos e especificações do projeto.
 
-Atualemte incompleto.
+Atualmente incompleto.
