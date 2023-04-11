@@ -77,26 +77,22 @@ int checaarg(int argc, char **argv, char** cifra, char** chaves, char** original
         }
         
         for(i=1; i<argc-1; i++){
-            if(strcmp(argv[i], "-b") == 0 && argv[i+1][0] != '-') {     //livro cifras
-                printf("Primero if: %s e %s\n", argv[i], argv[i+1]);
+            if(strcmp(argv[i], "-b") == 0 && argv[i+1][0] != '-')      //livro cifras
                 *cifra=argv[i+1];            
-            }
-            if(strcmp(argv[i], "-c") == 0 && argv[i+1][0] != '-') {     //arquivos de chaves
-                printf("segundo if: %s e %s\n", argv[i], argv[i+1]);
+            
+            if(strcmp(argv[i], "-c") == 0 && argv[i+1][0] != '-')     //arquivos de chaves
                 *chaves=argv[i+1];
-            }
-            if(strcmp(argv[i], "-m") == 0 && argv[i+1][0] != '-') {     //mensagem original
-                printf("Terceiro if: %s e %s\n", argv[i], argv[i+1]);
+            
+            if(strcmp(argv[i], "-m") == 0 && argv[i+1][0] != '-')     //mensagem original
                 *original=argv[i+1];
-            }
-            if(strcmp(argv[i], "-o") == 0 && argv[i+1][0] != '-') {     //mensagem codificada
-                printf("Quarto if: %s e %s\n", argv[i], argv[i+1]);
+            
+            if(strcmp(argv[i], "-o") == 0 && argv[i+1][0] != '-')     //mensagem codificada
                 *codificado=argv[i+1];
-            }
+            
         }
+
         if((*cifra!=NULL) && (*chaves!=NULL) && (*original!=NULL) && (*codificado!=NULL) )
             return ENCODE;          
-
     }
     //decode
     else if(strcmp(argv[i], "-d") == 0){    
@@ -136,13 +132,11 @@ int checaarg(int argc, char **argv, char** cifra, char** chaves, char** original
 //Printa na tela como devem ser as opções na entrada do programa
 void argerror(){//Imprime como devem ser os argumentos 
     printf("Argumentos errados, excessivos ou insuficientes.\n");
-    printf("\n./beale --help para informações.\n");
+    printf("./beale --help para informações.\n");
 }
 
 //imprime como devem ser os argumentos
 void arghelp(){
-    printf("\nBeale V1.0");
-    printf("\nPor Davi Lazzarin");
     printf("\nArgumentos:");
     printf("\nCodificação:");
     printf("\n\t -e encode");
@@ -157,6 +151,7 @@ void arghelp(){
     printf("\n\t -o mensagem decodificada, obrigatório");
     printf("\n\t -b livro cifra, opcional ao -c");
     printf("\n\t -c arquivo de chave, opcional ao -b");
-    printf("\nAjuda");
-    printf("\n\t --help\n");
+    printf("\nAjuda:");
+    printf("\n\t --help");
+    printf("\nBeale V1.0\tPor Davi Lazzarin\n");
 }

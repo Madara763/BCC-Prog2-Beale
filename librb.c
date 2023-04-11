@@ -12,7 +12,7 @@ rb_t* criarb(){
     rb_t* arv;
     arv=malloc(sizeof(rb_t));
     if (!arv){
-        perror("Erro de alocação->\n");
+        perror("Erro de alocação\n");
         return NULL;
     };
     arv->raiz=NULL;
@@ -48,7 +48,7 @@ rbno_t* criano(int chave, char letra){
     rbno_t *no;
     no=malloc(sizeof(rbno_t));
     if (!no){
-        perror("Erro de alocação->\n");
+        perror("Erro de alocação\n");
         return NULL;
     };
 
@@ -99,6 +99,7 @@ void rotEsquerda(rbno_t *p){
     x->esq=p; 
 }
 
+//ajusta a inclusão na RB garantindo o balanceamento
 void arruma_rb (rb_t* arv, rbno_t* nooriginal){
 
     rbno_t *tio, *avo, *no=nooriginal;
@@ -208,6 +209,7 @@ int inclui_rb(rb_t* arv, int chave, char letra){
     return 1;
 }
 
+//imprime toda a arvore
 void leitura_rb_interno(struct rbno* no){
     if (no->esq != NULL)
         leitura_rb_interno(no->esq);
@@ -231,11 +233,14 @@ void leitura_rb_interno(struct rbno* no){
 
 }
 
+//chama a função que imprime toda a arvore
 void leitura_rb(rb_t* no){
     if (no->raiz!=NULL)    
         leitura_rb_interno(no->raiz);
 }
 
+//recebe uma chave e busca ela na estrutura se achar retorna um char que corresponde a chave
+//se não achar retorn '\0'
 char busca_rb_interno(rbno_t* raiz, int chave){
     char letra;
     

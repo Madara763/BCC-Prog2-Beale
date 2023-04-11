@@ -37,10 +37,10 @@ int main(int argc, char **argv){
                
             break;
         }
-        case 2:{       //decode arquivo de chaves
+        case 2:{        //DECODE ARQUIVO DE CHAVES
 
-            FILE *arq=fopen(chaves, "r");                            //abre o arquivo de chaves
-            if(!arq){
+            FILE *livro=fopen(chaves, "r");                                 //abre o arquivo de chaves
+            if(!livro){
                 perror("Erro ao abrir livro cifra");
                 return 1;
             }//fopen livro
@@ -51,21 +51,21 @@ int main(int argc, char **argv){
                 return 1;
             }//fopen arqsaida
 
-            FILE *arqentrada=fopen(codificado,"r");                      //abre a o arquivo de entrada
+            FILE *arqentrada=fopen(codificado,"r");                         //abre a o arquivo de entrada
             if(!arqentrada){
                 perror("Erro ao abrir arquivo de entrada");
                 return 1;
             }//fopen arqcentrada
 
-            rb_t* arv=criarb();
+            rb_t* arv=criarb();                                             //cria a arvore
             if(!arv){
-                perror("Erro ao gerar estruturda de dados");
+                perror("Erro ao gerar estrutura de dados");
                 return 1;
             }//gera a Red Black
             //final das alocações 
 
             //le o arquivo de chave e gera a estrutura 
-            while (fscanf(arq, "%s", palavra) != EOF ){
+            while (fscanf(livro, "%s", palavra) != EOF ){
                 if(palavra[1] == ':')   //atualiza caractere, linha nova
                     caractere=palavra[0];
                 else{
@@ -90,40 +90,39 @@ int main(int argc, char **argv){
             deleta_rb(arv);
             fclose(arqentrada);
             fclose(arqsaida);
-            fclose(arq);
+            fclose(livro);
             break;
         }
-        case 3:{      //decode livro cifras
+        case 3:{            //DECODE LIVRO CIFRAS
         
-            FILE *livro=fopen(cifra, "r");                            //abre o livro cifra
+            FILE *livro=fopen(cifra, "r");                                   //abre o livro cifra
             if(!livro){
                 perror("Erro ao abrir livro cifra");
                 return 1;
             }//fopen livro
 
-            FILE *arqsaida=fopen(decodificado,"w+");                        //abre a o arquivo de saida
+            FILE *arqsaida=fopen(decodificado,"w+");                         //abre a o arquivo de saida
             if(!arqsaida){
                 perror("Erro ao abrir arquivo de saida");
                 return 1;
             }//fopen arqsaida
 
-            FILE *arqentrada=fopen(codificado,"r");                      //abre a o arquivo de entrada
+            FILE *arqentrada=fopen(codificado,"r");                          //abre a o arquivo de entrada
             if(!arqentrada){
                 perror("Erro ao abrir arquivo de entrada");
                 return 1;
             }//fopen arqcentrada
         
-            rb_t* arv=criarb();
+            rb_t* arv=criarb();                                              //cria a arvore
             if(!arv){
-                perror("Erro ao gerar estruturda de dados");
+                perror("Erro ao gerar estrutura de dados");
                 return 1;
             }//gera a Red Black
             //final das alocações 
 
 
             //Le o arquivo e gera a estrutura 
-            while ( fscanf(livro, "%s", palavra) != EOF){       
-            //printf("%d, %c\n",i, palavra[0]);             
+            while ( fscanf(livro, "%s", palavra) != EOF){                   
                 inclui_rb(arv, i, palavra[0]);
                 i++;
             }
@@ -150,7 +149,8 @@ int main(int argc, char **argv){
         }
         default:
             return 1;
-            break;
-    }
+
+    }//switch
+    return 0;
     
 }//Main
