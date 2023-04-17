@@ -4,7 +4,7 @@
     Data: 28/03/23
 */
 #ifndef _LIB_RB_
-#define _LIB_RB_
+#define _LIB_RB_ 
 
 //Enum da cor do nó
 typedef enum { VERMELHO, PRETO} Cor;
