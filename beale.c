@@ -2,74 +2,138 @@
 #include<stdlib.h>
 #include<string.h>
 #include<locale.h>
+#include<ctype.h>
 
-#include"libargmain.h"
+#include"libbeale.h"
 #include"librb.h"
+#include"liblista.h"
 
 #define MAXTAMSTRG 1000
+#define ESPACO -1
+#define NOVALINHA -2
+#define ENDLINE -3
 
 int main(int argc, char **argv){
 
-    // Ponteiros para os nomes dos arquivos
-    // cifra
-    // chaves
-    // original
-    // codificado
-    // decodificado
-    
-    char *cifra, *chaves, *original, *codificado, *decodificado;
+    // Ponteiros para os nomes dos arquivos   
+    char *nomeCifra, *nomeChaves, *nomeOriginal, *nomeCodificado, *nomeDecodificado;
     char palavra[MAXTAMSTRG], caractere;
 
-    int narg=checaarg(argc, argv, &cifra, &chaves, &original, &codificado, &decodificado);
-    int i=0;
+    //nopt recebe o numero da opção que o programa executará:
+    //1 encode
+    //2 decode com livro de chaves
+    //3 decode com livro cifras
+    int nopt=checaarg(argc, argv, &nomeCifra, &nomeChaves, &nomeOriginal, &nomeCodificado, &nomeDecodificado);
+    int i=1, codigo;
     
-    setlocale(LC_ALL, "");
+    FILE *livro, *arqentrada, *arqsaida, *arqchaves;
+    livro=NULL;
+    arqentrada=NULL;
+    arqsaida=NULL;
+    arqchaves=NULL;
 
-    switch (narg)
+    setlocale(LC_ALL, "");
+    srand(time(NULL));
+
+    switch (nopt)
     {
         case 1:{         //ENCODE                                    
-               
-            printf("ENCODE\n");
-            printf("Nome do Livro: %s\n",cifra);              //nome do livro
-            printf("Mensagem Original: %s\n",original);          //Mensagem Original
-            printf("Nome da Saida Codificada: %s\n",codificado);   //Mensagem Codificada
-            printf("Nome do Arquivo de Chaves: %s\n",chaves);  //nome do Arquivo de Chaves
-               
+
+            int arq=abre_arquivos(&livro, &arqentrada, &arqsaida, &arqchaves, nomeCifra,  nomeOriginal, nomeCodificado, nomeChaves, nopt);
+            if(arq == 0){
+                perror("Erro ao abrir arquivos");
+                return 1;
+            }
+
+            lista_t* lista=cria_lista();
+            if(!lista){
+                perror("Erro ao Gerar Estrutura de Dados");
+                return 1;
+            }//fopen livro
+
+            //Le o arquivo e gera a estrutura 
+            while ( fscanf(livro, "%s", palavra) != EOF){
+
+                if((palavra[0] > 64) && (palavra[0] < 91)  )
+                    caractere=tolower(palavra[0]);
+                else
+                    caractere=palavra[0];   
+
+                if((adiciona_lista(lista, caractere, i)) == 0 ){
+                    perror("Erro ao Gerar Estrutura de Dados");
+                    return 1;
+                }
+                i++;
+            }
+            
+            //Gera o arquivo de Chaves
+            imprime_lista(lista, arqchaves);
+
+            //Lê a mensagem original e gera  a msg codificada
+            caractere=getc(arqentrada);
+            if((caractere > 64) && (caractere < 91)  )
+                caractere=tolower(caractere);
+            while (!feof(arqentrada)){
+                
+                if (caractere == ' ' )
+                    fprintf(arqsaida,"%d ", ESPACO);
+        
+                else if (caractere == '\n' ){
+                    fprintf(arqsaida,"%d ", NOVALINHA);
+                }
+                else if (caractere == '\0' ){
+                    fprintf(arqsaida,"%d ", ENDLINE);
+                }
+                else{
+                    codigo=busca_cod_lista(lista, caractere);
+                    if(codigo != -1)                                           
+                        fprintf(arqsaida,"%d ", codigo);                         
+                }
+                
+                caractere=getc(arqentrada);
+                if((caractere > 64) && (caractere < 91)  )
+                    caractere=tolower(caractere);
+
+            }
+
+            //Libera memória e fecha os arquivos
+            deleta_lista(lista);
+            lista=NULL;
+            fclose(arqsaida);
+            arqsaida=NULL;
+            fclose(arqentrada);
+            arqentrada=NULL;
+            fclose(arqchaves);
+            arqchaves=NULL;
+            fclose(livro);
+            livro=NULL;
             break;
         }
         case 2:{        //DECODE ARQUIVO DE CHAVES
 
-            FILE *livro=fopen(chaves, "r");                                 //abre o arquivo de chaves
-            if(!livro){
-                perror("Erro ao abrir livro cifra");
+            int arq=abre_arquivos(&arqentrada, &arqchaves, &arqsaida, NULL,  nomeCodificado, nomeChaves, nomeDecodificado, NULL,  nopt);
+            if(arq == 0){
+                perror("Erro ao abrir arquivos");
                 return 1;
-            }//fopen livro
+            }
 
-            FILE *arqsaida=fopen(decodificado,"w+");                        //abre a o arquivo de saida
-            if(!arqsaida){
-                perror("Erro ao abrir arquivo de saida");
-                return 1;
-            }//fopen arqsaida
-
-            FILE *arqentrada=fopen(codificado,"r");                         //abre a o arquivo de entrada
-            if(!arqentrada){
-                perror("Erro ao abrir arquivo de entrada");
-                return 1;
-            }//fopen arqcentrada
-
-            rb_t* arv=criarb();                                             //cria a arvore
+            rb_t* arv=criarb();  
             if(!arv){
                 perror("Erro ao gerar estrutura de dados");
                 return 1;
             }//gera a Red Black
-            //final das alocações 
+            //FINAL DAS ALOCAÇÕES
 
             //le o arquivo de chave e gera a estrutura 
-            while (fscanf(livro, "%s", palavra) != EOF ){
+            while (fscanf(arqchaves, "%s", palavra) != EOF ){
                 if(palavra[1] == ':')   //atualiza caractere, linha nova
-                    caractere=palavra[0];
+                    if((palavra[0] > 64) && (palavra[0] < 91)  )
+                        caractere=tolower(palavra[0]);
+                    else
+                        caractere=palavra[0];
                 else{
                     i=atoi(palavra);
+                    caractere=tolower(caractere);
                     inclui_rb(arv, i, caractere);
                 }
             }
@@ -77,64 +141,20 @@ int main(int argc, char **argv){
             //Le a estrutura e gera a saida
             while (fscanf(arqentrada, "%s", palavra) != EOF){
                 i=atoi(palavra);
-                if(i==-1){
-                    fprintf(arqsaida," ");   
+                if(i<=0){
+                    if(i==ESPACO)
+                       fprintf(arqsaida,"%c", ' ');
+                    else if (i== ENDLINE)
+                         fprintf(arqsaida,"%c", '\0'); 
+                    else if (i== NOVALINHA)
+                        fprintf(arqsaida,"%c", '\n');
+
                 }
                 else{
                     caractere=busca_rb(arv, i);
-                    if(caractere != '\0')
-                        fprintf(arqsaida,"%c",caractere); 
-                }          
-            }
-
-            deleta_rb(arv);
-            fclose(arqentrada);
-            fclose(arqsaida);
-            fclose(livro);
-            break;
-        }
-        case 3:{            //DECODE LIVRO CIFRAS
-        
-            FILE *livro=fopen(cifra, "r");                                   //abre o livro cifra
-            if(!livro){
-                perror("Erro ao abrir livro cifra");
-                return 1;
-            }//fopen livro
-
-            FILE *arqsaida=fopen(decodificado,"w+");                         //abre a o arquivo de saida
-            if(!arqsaida){
-                perror("Erro ao abrir arquivo de saida");
-                return 1;
-            }//fopen arqsaida
-
-            FILE *arqentrada=fopen(codificado,"r");                          //abre a o arquivo de entrada
-            if(!arqentrada){
-                perror("Erro ao abrir arquivo de entrada");
-                return 1;
-            }//fopen arqcentrada
-        
-            rb_t* arv=criarb();                                              //cria a arvore
-            if(!arv){
-                perror("Erro ao gerar estrutura de dados");
-                return 1;
-            }//gera a Red Black
-            //final das alocações 
-
-
-            //Le o arquivo e gera a estrutura 
-            while ( fscanf(livro, "%s", palavra) != EOF){                   
-                inclui_rb(arv, i, palavra[0]);
-                i++;
-            }
-
-            //Le a estrutura e gera a saida
-            while (fscanf(arqentrada, "%s", palavra) != EOF){
-                i=atoi(palavra);
-                if(i==-1){
-                    fprintf(arqsaida," ");   
-                }
-                else{
-                    caractere=busca_rb(arv, i);
+                    if((palavra[0] > 64) && (palavra[0] < 91)  )
+                        caractere=tolower(palavra[0]);
+                    
                     if(caractere != '\0')
                         fprintf(arqsaida,"%c",caractere); 
                 }          
@@ -142,9 +162,65 @@ int main(int argc, char **argv){
 
             //Libera memória e fecha os arquivos
             deleta_rb(arv);
+            arv=NULL;
             fclose(arqentrada);
+            arqentrada=NULL;
             fclose(arqsaida);
+            arqsaida=NULL;
+            fclose(arqchaves);
+            arqchaves=NULL;
+            break;
+        }
+        case 3:{            //DECODE LIVRO CIFRAS
+            
+            int arq=abre_arquivos(&arqentrada, &livro, &arqsaida, NULL,  nomeCodificado, nomeCifra, nomeDecodificado, NULL,  nopt);
+            if(arq == 0){
+                perror("Erro ao abrir arquivos");
+                return 1;
+            }
+                
+            rb_t* arv=criarb();                                           
+            if(!arv){
+                perror("Erro ao gerar estrutura de dados");
+                return 1;
+            }//gera a Red Black
+            //FINAL DAS ALOCAÇÕES
+
+            //Le o arquivo e gera a estrutura 
+            while ( fscanf(livro, "%s", palavra) != EOF){
+                caractere=tolower(palavra[0]);                   
+                inclui_rb(arv, i, caractere);
+                i++;
+            }
+
+            //Le a estrutura e gera a saida
+            while (fscanf(arqentrada, "%s", palavra) != EOF){
+                i=atoi(palavra);
+                if(i<=0){
+                    if(i==ESPACO)
+                       fprintf(arqsaida,"%c", ' ');
+                    else if (i== ENDLINE)
+                         fprintf(arqsaida,"%c", '\0'); 
+                    else if (i== NOVALINHA)
+                        fprintf(arqsaida,"%c", '\n');
+                }
+                else{
+                    caractere=busca_rb(arv, i);
+                    caractere=tolower(caractere);
+                    if(caractere != '\0')
+                        fprintf(arqsaida,"%c",caractere); 
+                }          
+            }
+            
+            //Libera memória e fecha os arquivos
+            deleta_rb(arv);
+            arv=NULL;
+            fclose(arqentrada);
+            arqentrada=NULL;
+            fclose(arqsaida);
+            arqsaida=NULL;
             fclose(livro);
+            livro=NULL;
             break;
         }
         default:

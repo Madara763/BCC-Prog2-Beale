@@ -8,7 +8,7 @@ Data: 27/03/2023
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include"libargmain.h"
+#include"libbeale.h"
 
 #define ENCODE 1
 #define CHAVES 2
@@ -154,4 +154,45 @@ void arghelp(){
     printf("\nAjuda:");
     printf("\n\t --help");
     printf("\nBeale V1.0\tPor Davi Lazzarin\n");
+}
+
+//abre os arquivos conforme opt
+//retorna 0 em caso de erro e 1 em caso de sucesso
+int abre_arquivos(FILE** file1, FILE** file2, FILE** file3, FILE** file4, char* nfile1, char* nfile2, char* nfile3, char* nfile4, int opt){
+    
+    switch (opt)
+    {
+    case 1: 
+        //abre aquivos para encode
+        *file1=fopen(nfile1, "r");
+        *file2=fopen(nfile2, "r");
+        *file3=fopen(nfile3, "w+");  
+        *file4=fopen(nfile4, "w+");
+
+        if((*file1 == NULL) || (*file2 == NULL) || (*file3 == NULL) || (*file4 == NULL) ) 
+            return 0;  
+        break;
+    case 2: 
+        //abre aquivos para decode com arquivo de chaves
+        *file1=fopen(nfile1, "r");
+        *file2=fopen(nfile2, "r");
+        *file3=fopen(nfile3, "w+");  
+
+        if((*file1 == NULL) || (*file2 == NULL) || (*file3 == NULL) ) 
+            return 0;  
+        break;
+    case 3: 
+        //abre aquivos para decode com cifras
+        *file1=fopen(nfile1, "r");
+        *file2=fopen(nfile2, "r");
+        *file3=fopen(nfile3, "w+");  
+
+        if((*file1 == NULL) || (*file2 == NULL) || (*file3 == NULL) ) 
+            return 0;  
+        break;
+    default:
+        break;
+    }
+    
+    return 1; 
 }
