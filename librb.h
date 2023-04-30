@@ -42,4 +42,8 @@ void leitura_rb(rb_t* no);
 //busca a o nó da chave passada como parametro
 //se achar retorna um ponteiro para uma cópia da letra que havia no nó
 char busca_rb(rb_t* arv, int chave);
+
+//garante que todos os char da tabela ascii farão parte da estrutura de decodificação
+void integra_rb(rb_t* arv, char l[], int i);
+
 #endif

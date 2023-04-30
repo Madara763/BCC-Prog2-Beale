@@ -196,3 +196,4 @@ int abre_arquivos(FILE** file1, FILE** file2, FILE** file3, FILE** file4, char* 
     
     return 1; 
 }
+

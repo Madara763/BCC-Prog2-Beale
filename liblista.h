@@ -23,14 +23,22 @@ typedef struct lista{
     int tam;    //armazena a quantidade de caracteres que existem na lista
 }lista_t;
 
+//alloca memória para a lista
 lista_t* cria_lista();
 
+//adiciona um char e a sua chave na lista
 int adiciona_lista(lista_t* lista, char c, int num);
 
+//apaga a lista e limpa a meória
 void deleta_lista(lista_t* lista);
 
+//busca o char na lista e devolve um int aleatório dentre os correspondentes aquele char
 int busca_cod_lista(lista_t* lista, char c);
 
+//imprime a lista em um arquivo
 void imprime_lista(lista_t* lista, FILE* arqchaves);
+
+//Verifica a integridade da lista
+void integra_lista(lista_t* lista, int i);
 
 #endif

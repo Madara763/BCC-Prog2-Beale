@@ -5,6 +5,8 @@
 */
 #include"liblista.h"
 
+#define TAB_ASCII 256
+
 lista_t* cria_lista(){
     //a lista em si
     lista_t* lista=malloc(sizeof(lista_t));
@@ -149,3 +151,26 @@ void imprime_lista(lista_t* lista, FILE* arqchaves){
     }
 
 }//imprime_lista
+
+//Verifica a integridade da lista
+void integra_lista(lista_t* lista, int i){
+
+    char letras[TAB_ASCII];
+    int c, j;
+
+    for(j=0; j<TAB_ASCII; j++ ){
+        letras[j]='0';
+    }
+
+    for(j=0; j<lista->tam; j++ ){
+        c=lista->l[j];
+        letras[c]='1';
+    }
+
+    for(j=33; j<TAB_ASCII - 1; j++ ){    
+        if(letras[j]=='0'){
+            adiciona_lista(lista, j, i);
+            i++;
+        }
+    }
+}

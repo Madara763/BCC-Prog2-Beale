@@ -8,6 +8,7 @@
 #include"librb.h"
 #include"liblista.h"
 
+#define TAB_ASCII 256
 #define MAXTAMSTRG 1000
 #define ESPACO -1
 #define NOVALINHA -2
@@ -53,19 +54,25 @@ int main(int argc, char **argv){
 
             //Le o arquivo e gera a estrutura 
             while ( fscanf(livro, "%s", palavra) != EOF){
+                
+                if(palavra[0]>=0){  //para restringir caracteres estranhos 
 
-                if((palavra[0] > 64) && (palavra[0] < 91)  )
-                    caractere=tolower(palavra[0]);
-                else
-                    caractere=palavra[0];   
+                    if((palavra[0] > 64) && (palavra[0] < 91)  )    //para garantir que não haverá letras maiusculas
+                        caractere=tolower(palavra[0]);
+                    else
+                        caractere=palavra[0];   
 
-                if((adiciona_lista(lista, caractere, i)) == 0 ){
-                    perror("Erro ao Gerar Estrutura de Dados");
-                    return 1;
+                    if((adiciona_lista(lista, caractere, i)) == 0 ){
+                        perror("Erro ao Gerar Estrutura de Dados");
+                        return 1;
+                    }
+                    i++;
                 }
-                i++;
             }
             
+            //Verifica a integridade da lista
+            integra_lista(lista, i);
+
             //Gera o arquivo de Chaves
             imprime_lista(lista, arqchaves);
 
@@ -126,6 +133,7 @@ int main(int argc, char **argv){
 
             //le o arquivo de chave e gera a estrutura 
             while (fscanf(arqchaves, "%s", palavra) != EOF ){
+
                 if(palavra[1] == ':')   //atualiza caractere, linha nova
                     if((palavra[0] > 64) && (palavra[0] < 91)  )
                         caractere=tolower(palavra[0]);
@@ -137,7 +145,7 @@ int main(int argc, char **argv){
                     inclui_rb(arv, i, caractere);
                 }
             }
-            
+
             //Le a estrutura e gera a saida
             while (fscanf(arqentrada, "%s", palavra) != EOF){
                 i=atoi(palavra);
@@ -173,6 +181,12 @@ int main(int argc, char **argv){
         }
         case 3:{            //DECODE LIVRO CIFRAS
             
+            //Para a integralização da estrutura
+            char l[TAB_ASCII];    
+            int j;
+            for(j=0; j<256; j++)
+                l[j]='0';
+
             int arq=abre_arquivos(&arqentrada, &livro, &arqsaida, NULL,  nomeCodificado, nomeCifra, nomeDecodificado, NULL,  nopt);
             if(arq == 0){
                 perror("Erro ao abrir arquivos");
@@ -188,10 +202,27 @@ int main(int argc, char **argv){
 
             //Le o arquivo e gera a estrutura 
             while ( fscanf(livro, "%s", palavra) != EOF){
-                caractere=tolower(palavra[0]);                   
-                inclui_rb(arv, i, caractere);
-                i++;
+
+                if((palavra[0] > 64) && (palavra[0] < 91)  )
+                        caractere=tolower(palavra[0]);
+                else
+                    caractere=palavra[0];
+
+                if(caractere>=0){
+                    inclui_rb(arv, i, caractere);
+                    i++;
+
+                //salva os caracteres diferentes que apareceram na lista
+                if(caractere>32 && caractere<256){
+                    j=caractere;
+                    if(l[j]=='0')
+                        l[j]='1';
+                }
+                }
             }
+
+            //integra a rb, garantindo que todos os char estarão na estrutura
+            integra_rb( arv, l, i);
 
             //Le a estrutura e gera a saida
             while (fscanf(arqentrada, "%s", palavra) != EOF){

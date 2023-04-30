@@ -7,6 +7,8 @@
 #include<stdlib.h>
 #include"librb.h"
 
+#define TAB_ASCII 256
+
 //Cria a arvore
 rb_t* criarb(){
     rb_t* arv;
@@ -252,7 +254,7 @@ char busca_rb_interno(rbno_t* raiz, int chave){
         else  
             no=no->dir;
     }
-    if(no->chave == chave){
+    if((no!=NULL) && (no->chave == chave)){
         letra=no->letra;
         return letra;
     }
@@ -264,4 +266,17 @@ char busca_rb(rb_t* arv, int chave){
         return busca_rb_interno(arv->raiz, chave);
 
     return '\0';
+}
+
+//garante que todos os char da tabela ascii farão parte da estrutura de decodificação
+void integra_rb(rb_t* arv, char l[], int i){
+    char c;
+
+    for(int j=33; j<256; j++ ){
+        if(l[j]=='0'){
+            c=j;
+            inclui_rb(arv, i, c);
+            i++;
+        }
+    }
 }
