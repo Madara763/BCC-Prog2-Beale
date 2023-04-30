@@ -123,7 +123,7 @@ int checaarg(int argc, char **argv, char** cifra, char** chaves, char** original
             else if(*cifra==NULL && *chaves != NULL)
                 return CHAVES;
         }
-    }//while
+    }//while 
 
     argerror();
     return 0;

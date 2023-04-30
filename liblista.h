@@ -10,7 +10,7 @@
 
 #ifndef _LIB_L_
 #define _LIB_L_
-#define STDTAM 100
+#define STDTAM 100 
 
 typedef struct listano{
     int* chaves;

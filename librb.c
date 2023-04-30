@@ -240,7 +240,7 @@ void leitura_rb(rb_t* no){
     if (no->raiz!=NULL)    
         leitura_rb_interno(no->raiz);
 }
-
+ 
 //recebe uma chave e busca ela na estrutura se achar retorna um char que corresponde a chave
 //se não achar retorn '\0'
 char busca_rb_interno(rbno_t* raiz, int chave){

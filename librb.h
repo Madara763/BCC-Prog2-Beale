@@ -45,5 +45,5 @@ char busca_rb(rb_t* arv, int chave);
 
 //garante que todos os char da tabela ascii farão parte da estrutura de decodificação
 void integra_rb(rb_t* arv, char l[], int i);
-
+ 
 #endif

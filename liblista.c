@@ -149,7 +149,7 @@ void imprime_lista(lista_t* lista, FILE* arqchaves){
         }
         fprintf(arqchaves, "\n");    
     }
-
+ 
 }//imprime_lista
 
 //Verifica a integridade da lista

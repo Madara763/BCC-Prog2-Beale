@@ -6,7 +6,7 @@ Data: 27/03/2023
 */
 
 #ifndef __LIBBEALE__
-#define __LIBBEALE__
+#define __LIBBEALE__ 
 
 /*Checa todos os argumentos e retorna:
 0 em caso de err0

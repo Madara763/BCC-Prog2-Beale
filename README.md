@@ -22,4 +22,4 @@ Quanto as funcionalidades:
 Quanto a algumas escolhas:
     A utilização da RedBlack se mostrou uma opção válida para redução do custo de busca em casos de decode após perceber que o programa poderia receber "livros cifra" com milhares de palavras, isso geraria um possivel custo O(n) = n durante as buscas, podendo ser reduzido a O(n) = Log(n) com a utilização da RB.
     Foi inevitável o uso de algum tipo de lista para a geração dos arquivos de chaves durante o encode, já que de alguma forma todos os numeros referentes a algum caractere deveriam estar ligados a ele, e a melhor forma para se fazer isso é com uma lista.
-    Após algumas observações foi implementado um sistema que garante que os valoresda tabelas ASCII estarão todos nas estruturas geradas por livro cifra, e que os arquivos de chaves gerados conterão todos os caracteres ASCII.
+    Após algumas observações foi implementado um sistema que garante que os valoresda tabelas ASCII estarão todos nas estruturas geradas por livro cifra, e que os arquivos de chaves gerados conterão todos os caracteres ASCII. 
